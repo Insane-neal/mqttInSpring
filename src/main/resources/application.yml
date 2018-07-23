@@ -1,0 +1,4 @@
+mqtt:
+  server:
+    url: tcp://59.110.161.90
+    port: 1883
