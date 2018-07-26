@@ -1,8 +1,8 @@
 package com.quwoqu.mqtt;
 
-import org.springframework.integration.channel.DirectChannel;
-import org.springframework.integration.core.MessageProducer;
-import org.springframework.messaging.*;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.MessagingException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  */
 @MqttMessageReceiverHandler(topic = "qilei-test")
 @Component
-public class TestReceiverHandler implements MessageHandler ,MessageProducer {
+public class TestReceiverHandler implements MessageHandler {
 
     @Override
     public void handleMessage(Message<?> message) throws MessagingException {
@@ -20,13 +20,4 @@ public class TestReceiverHandler implements MessageHandler ,MessageProducer {
         System.out.println(payload);
     }
 
-    @Override
-    public void setOutputChannel(MessageChannel messageChannel) {
-
-    }
-
-    @Override
-    public MessageChannel getOutputChannel() {
-        return new DirectChannel();
-    }
 }

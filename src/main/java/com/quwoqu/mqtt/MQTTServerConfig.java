@@ -1,12 +1,15 @@
 package com.quwoqu.mqtt;
 
+import org.eclipse.paho.client.mqttv3.IMqttAsyncClient;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
-import org.springframework.integration.dsl.StandardIntegrationFlow;
 import org.springframework.integration.endpoint.MessageProducerSupport;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
@@ -38,9 +41,8 @@ public class MQTTServerConfig {
     private ApplicationContext context;
     private HashMap<String ,MessageHandler> registredMessageHandlerMap=new HashMap<>();
 
-
     @Bean
-    public StandardIntegrationFlow mqttInFlow() {
+    public IntegrationFlow mqttInFlow() {
         //获取所有带有MqttMessageHandler注解的类，拼接成String数组，并且注入到Map中去。
         Map<String, Object> beansWithAnnotation = context.getBeansWithAnnotation(MqttMessageReceiverHandler.class);
         String[] topics=new String[beansWithAnnotation.size()];
@@ -77,6 +79,13 @@ public class MQTTServerConfig {
         }
         return factory;
     }
+    @Bean
+    public IMqttAsyncClient mqtt() throws MqttException {
+        MqttPahoClientFactory mqttPahoClientFactory = mqttClientFactory();
+        IMqttAsyncClient asyncClientInstance = mqttPahoClientFactory.getAsyncClientInstance(serverUrl + ":" + port, appName + "-sender");
+        IMqttToken connect = asyncClientInstance.connect();
+        connect.waitForCompletion();
+        return asyncClientInstance;
 
-
+    }
 }
